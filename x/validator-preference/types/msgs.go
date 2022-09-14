@@ -13,10 +13,9 @@ const (
 var _ sdk.Msg = &MsgValidatorSetPreference{}
 
 // NewMsgCreateValidatorSetPreference creates a msg to create a new denom
-func NewMsgCreateValidatorSetPreference(valOperatorAddress string, weight sdk.Dec) *MsgValidatorSetPreference {
+func NewMsgCreateValidatorSetPreference(validators []ValidatorPreference) *MsgValidatorSetPreference {
 	return &MsgValidatorSetPreference{
-		valOperatorAddress: valOperatorAddress,
-		weight:             weight,
+		Preferences: validators,
 	}
 }
 
@@ -43,6 +42,6 @@ func (m MsgValidatorSetPreference) GetSigners() []sdk.AccAddress {
 		valAddr, _ := sdk.AccAddressFromBech32(validator.ValOperAddress)
 		validators = append(validators, valAddr)
 	}
-	
+
 	return validators
 }

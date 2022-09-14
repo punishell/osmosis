@@ -18,8 +18,4 @@ type StakingInterface interface {
 	GetDelegation(ctx sdk.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) (delegation stakingtypes.Delegation, found bool)
 	UnbondingTime(ctx sdk.Context) time.Duration
 	GetParams(ctx sdk.Context) stakingtypes.Params
-
-	IterateBondedValidatorsByPower(ctx sdk.Context, fn func(int64, stakingtypes.ValidatorI) bool)
-	TotalBondedTokens(ctx sdk.Context) sdk.Int
-	IterateDelegations(ctx sdk.Context, delegator sdk.AccAddress, fn func(int64, stakingtypes.DelegationI) bool)
 }

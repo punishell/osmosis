@@ -24,7 +24,6 @@ func (server msgServer) CreateValidatorSetPreference(goCtx context.Context, msg 
 
 	// TODO: might want to check if a user already have a validator-set created
 
-
 	total_weight := sdk.NewDec(0)
 	for _, validator := range msg.Preferences { 
 		// validation checks making sure the weights add up to 1 and also the validator given is correct
@@ -41,7 +40,7 @@ func (server msgServer) CreateValidatorSetPreference(goCtx context.Context, msg 
 	}
 
 	if total_weight != sdk.NewDec(1) {
-		return fmt.Errorf("The weights allocated to the validators do not add up")
+		return fmt.Errorf("The weights allocated to the validators do not add up to 1")
 	}
 
 	server.Keeper.SetValidatorSetPreferences(ctx, msg.Preferences)
