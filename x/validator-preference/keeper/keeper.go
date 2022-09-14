@@ -2,12 +2,15 @@ package keeper
 
 import (
 	"fmt"
-	"log"
+
+	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/osmosis-labs/osmosis/v12/x/validator-preference/types"
+	"google.golang.org/protobuf/proto"
 )
 
 type Keeper struct {
@@ -17,7 +20,7 @@ type Keeper struct {
 	stakingKeeper types.StakingInterface
 }
 
-func NewKeeper(storeKey sdk.StoreKey, paramSpace types.Subspace, stakingKeeper types.StakingInterface) keeper {
+func NewKeeper(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace, stakingKeeper types.StakingInterface) Keeper {
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(types.ParamKeyTable())
 	}
@@ -38,18 +41,21 @@ func (k Keeper) SetValidatorSetPreferences(ctx sdk.Context, validators types.Msg
 	prefixStore := prefix.NewStore(store, types.KeyPrefixValidatorSet)
 	bz, err := proto.Marshal(&validators)
 	if err != nil {
-		panic err) 
+		panic("Error during marshalling")
 	}
-	store.Set(types.KeyPrefixValidatorSet, bz)
+	prefixStore.Set(types.KeyPrefixValidatorSet, bz)
 }
 
-func (k Keeper) GetValidatorSetPreference(ctx sdk.Context) (*types.MsgvalidatorSetPreference) []types.ValidatorPreference{
+func (k Keeper) GetValidatorSetPreference(ctx sdk.Context) []types.ValidatorPreference {
 	validatorSet := []types.ValidatorPreference{}
 
 	store := ctx.KVStore(k.storeKey)
 	prefixStore := prefix.NewStore(store, types.KeyPrefixValidatorSet)
-	bz := store.Get(types.KeyPrefixValidatorSet) 
-	err := proto.Unmarshal(bz, validatorSet)
+	bz := prefixStore.Get(types.KeyPrefixValidatorSet)
+	err := proto.Unmarshal(bz, &validatorSet)
+	if err != nil {
+		panic("Error during unmarshalling")
+	}
 
 	return validatorSet
 }

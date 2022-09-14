@@ -2,19 +2,22 @@ package keeper
 
 import (
 	"context"
+	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/osmosis-labs/osmosis/v12/x/validator-preference/types"
 )
 
 type msgServer struct {
-	Keeper
+	keeper *Keeper
 }
 
 // NewMsgServerImpl returns an implementation of the MsgServer interface
 // for the provided Keeper.
-func NewMsgServerImpl(keeper Keeper) types.MsgServer {
-	return &msgServer{Keeper: keeper}
+func NewMsgServerImpl(keeper *Keeper) types.MsgServer {
+	return &msgServer{
+		keeper: keeper,
+	}
 }
 
 var _ types.MsgServer = msgServer{}
@@ -25,27 +28,45 @@ func (server msgServer) CreateValidatorSetPreference(goCtx context.Context, msg 
 	// TODO: might want to check if a user already have a validator-set created
 
 	total_weight := sdk.NewDec(0)
-	for _, validator := range msg.Preferences { 
+	for _, val := range msg.Preferences {
 		// validation checks making sure the weights add up to 1 and also the validator given is correct
-		vals, err := sdk.AccAddressFromBech32(validator)
+		vals, err := sdk.ValAddressFromBech32(val.ValOperAddress)
 		if err != nil {
-			return fmt.Errorf("validator not formatted")
+			return nil, fmt.Errorf("validator not formatted")
 		}
 
-		if _, found := k.GetValidator(ctx, vals) found {
-			return fmt.Errorf("validator address doesnot exist")
+		_, found := server.keeper.stakingKeeper.GetValidator(ctx, vals)
+		if !found {
+			return nil, fmt.Errorf("validator address kdoesnot exist")
 		}
 
-		total_weight = total_weight.Add(validator.Weight)
+		total_weight = total_weight.Add(val.Weight)
 	}
 
 	if total_weight != sdk.NewDec(1) {
-		return fmt.Errorf("The weights allocated to the validators do not add up to 1")
+		return nil, fmt.Errorf("The weights allocated to the validators do not add up to 1")
 	}
 
-	server.Keeper.SetValidatorSetPreferences(ctx, msg.Preferences)
-	
-	return &types.MsgValidatorSetPreferenceResponse{
-		success: true
-	}, nil
+	server.keeper.SetValidatorSetPreferences(ctx, *msg)
+
+	return &types.MsgValidatorSetPreferenceResponse{}, nil
+}
+
+func (server msgServer) StakeToValidatorSet(goCtx context.Context, msg *types.MsgStakeToValidatorSet) (*types.MsgValidatorSetPreferenceResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	// loop through the validatorSetPreference and delegate the proportion of the tokens based on weights
+	// user account address
+	owner, err := sdk.AccAddressFromBech32(msg.Owner)
+	if err != nil {
+		return nil, err
+	}
+
+	//tokens := msg.Coins
+	//validatorPreferences := msg.Preferences
+
+	//newShares, err := server.keeper.stakingKeeper.Delegate(ctx, owner)
+
+	return nil, nil
+
 }

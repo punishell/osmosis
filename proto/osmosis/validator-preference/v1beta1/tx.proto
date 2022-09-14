@@ -2,6 +2,7 @@ syntax = "proto3";
 package osmosis.validatorpreference.v1beta1;
 
 import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
 import "osmosis/validator-preference/v1beta1/state.proto";
 
 option go_package = "github.com/osmosis-labs/osmosis/v12/x/validator-preference/types";
@@ -11,6 +12,10 @@ service Msg {
   // CreateValidatorSetPreference creates a set of validator preference.
   rpc CreateValidatorSetPreference(MsgValidatorSetPreference)
       returns (MsgValidatorSetPreferenceResponse);
+
+  // StakeToValidatorSet gets the owner and coins and stakes to a validator-set.
+  rpc StakeToValidatorSet(MsgStakeToValidatorSet) 
+      returns (MsgStakeToValidatorSetResponse);
 }
 
 // MsgValidatorSetPreference is a set of list that holds validator-preference.
@@ -19,3 +24,20 @@ message MsgValidatorSetPreference {
 }
 
 message MsgValidatorSetPreferenceResponse { bool success = 1; }
+
+
+message MsgStakeToValidatorSet{
+  // owner is the user who is trying to stake.
+  string owner = 1 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
+
+  // the amount of tokens the user is trying to stake. 
+  repeated cosmos.base.v1beta1.Coin coins = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+
+  // the users validator set, {valAddr, weight} to stake the tokens to.
+  repeated ValidatorPreference preferences = 3 [ (gogoproto.nullable) = false ];
+}
+
+message MsgStakeToValidatorSetResponse { uint64 ID = 1; }
