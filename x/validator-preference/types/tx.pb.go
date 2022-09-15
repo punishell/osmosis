@@ -232,7 +232,8 @@ type MsgUnStakeFromValidatorSet struct {
 	// the id of the staked
 	ID uint64 `protobuf:"varint,2,opt,name=ID,proto3" json:"ID,omitempty"`
 	// the amount the user wants to unstake
-	// user should be able to unstake a porportion of the amount from validator-set
+	// user should be able to unstake a porportion of the amount from
+	// validator-set
 	Coins github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,3,rep,name=coins,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"coins"`
 	// the users validator set, {valAddr, weight} to unstake the tokens from.
 	Preferences []ValidatorPreference `protobuf:"bytes,4,rep,name=preferences,proto3" json:"preferences"`
@@ -409,7 +410,8 @@ type MsgClient interface {
 	CreateValidatorSetPreference(ctx context.Context, in *MsgValidatorSetPreference, opts ...grpc.CallOption) (*MsgValidatorSetPreferenceResponse, error)
 	// StakeToValidatorSet gets the owner and coins and stakes to a validator-set.
 	StakeToValidatorSet(ctx context.Context, in *MsgStakeToValidatorSet, opts ...grpc.CallOption) (*MsgStakeToValidatorSetResponse, error)
-	// UnStakeFromoValidatorSet gets the owner and coins and stakes to a validator-set.
+	// UnStakeFromoValidatorSet gets the owner and coins and stakes to a
+	// validator-set.
 	UnStakeFromoValidatorSet(ctx context.Context, in *MsgUnStakeFromValidatorSet, opts ...grpc.CallOption) (*MsgUnStakeFromValidatorSetResponse, error)
 }
 
@@ -454,7 +456,8 @@ type MsgServer interface {
 	CreateValidatorSetPreference(context.Context, *MsgValidatorSetPreference) (*MsgValidatorSetPreferenceResponse, error)
 	// StakeToValidatorSet gets the owner and coins and stakes to a validator-set.
 	StakeToValidatorSet(context.Context, *MsgStakeToValidatorSet) (*MsgStakeToValidatorSetResponse, error)
-	// UnStakeFromoValidatorSet gets the owner and coins and stakes to a validator-set.
+	// UnStakeFromoValidatorSet gets the owner and coins and stakes to a
+	// validator-set.
 	UnStakeFromoValidatorSet(context.Context, *MsgUnStakeFromValidatorSet) (*MsgUnStakeFromValidatorSetResponse, error)
 }
 
