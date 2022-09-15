@@ -28,7 +28,7 @@ message MsgValidatorSetPreference {
   repeated ValidatorPreference preferences = 1 [ (gogoproto.nullable) = false ];
 }
 
-message MsgValidatorSetPreferenceResponse { uint64 Id = 1; }
+message MsgValidatorSetPreferenceResponse { bool success = 1; }
 
 message MsgStakeToValidatorSet {
   // owner is the user who is trying to stake.
@@ -45,7 +45,7 @@ message MsgStakeToValidatorSet {
   repeated ValidatorPreference preferences = 3 [ (gogoproto.nullable) = false ];
 }
 
-message MsgStakeToValidatorSetResponse { uint64 ID = 1; }
+message MsgStakeToValidatorSetResponse { bool success = 1; }
 
 message MsgUnStakeFromValidatorSet {
   // owner is the user who is trying to unstake.
