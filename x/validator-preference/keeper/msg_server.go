@@ -52,7 +52,7 @@ func (server msgServer) CreateValidatorSetPreference(goCtx context.Context, msg 
 	return &types.MsgValidatorSetPreferenceResponse{}, nil
 }
 
-func (server msgServer) StakeToValidatorSet(goCtx context.Context, msg *types.MsgStakeToValidatorSet) (*types.MsgValidatorSetPreferenceResponse, error) {
+func (server msgServer) StakeToValidatorSet(goCtx context.Context, msg *types.MsgStakeToValidatorSet) (*types.MsgStakeToValidatorSetResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	// loop through the validatorSetPreference and delegate the proportion of the tokens based on weights
@@ -62,11 +62,32 @@ func (server msgServer) StakeToValidatorSet(goCtx context.Context, msg *types.Ms
 		return nil, err
 	}
 
-	//tokens := msg.Coins
-	//validatorPreferences := msg.Preferences
+	tokenAmt := sdk.NewDec(msg.Coins[0].Amount.Int64())
 
-	//newShares, err := server.keeper.stakingKeeper.Delegate(ctx, owner)
+	for _, val := range msg.Preferences {
+		// it'd be nice if this value was decimal
+		amountToStake := val.Weight.Mul(tokenAmt).RoundInt()
 
+		vals, err := sdk.ValAddressFromBech32(val.ValOperAddress)
+		if err != nil {
+			return nil, fmt.Errorf("validator not formatted")
+		}
+
+		validator, found := server.keeper.stakingKeeper.GetValidator(ctx, vals)
+		if !found {
+			return nil, fmt.Errorf("validator address kdoesnot exist")
+		}
+
+		_, err = server.keeper.stakingKeeper.Delegate(ctx, owner, amountToStake, validator.Status, validator, true)
+		if err != nil {
+			return nil, err
+		}
+
+	}
+
+	return &types.MsgStakeToValidatorSetResponse{}, nil
+}
+
+func (server msgServer) UnStakeFromoValidatorSet(goCtx context.Context, msg *types.MsgUnStakeFromValidatorSet) (*types.MsgUnStakeFromValidatorSetResponse, error) {
 	return nil, nil
-
 }

@@ -14,8 +14,13 @@ service Msg {
       returns (MsgValidatorSetPreferenceResponse);
 
   // StakeToValidatorSet gets the owner and coins and stakes to a validator-set.
-  rpc StakeToValidatorSet(MsgStakeToValidatorSet) 
+  rpc StakeToValidatorSet(MsgStakeToValidatorSet)
       returns (MsgStakeToValidatorSetResponse);
+
+  // UnStakeFromoValidatorSet gets the owner and coins and unstakes from
+  // validator-set.
+  rpc UnStakeFromoValidatorSet(MsgUnStakeFromValidatorSet)
+      returns (MsgUnStakeFromValidatorSetResponse);
 }
 
 // MsgValidatorSetPreference is a set of list that holds validator-preference.
@@ -25,19 +30,40 @@ message MsgValidatorSetPreference {
 
 message MsgValidatorSetPreferenceResponse { bool success = 1; }
 
-
-message MsgStakeToValidatorSet{
+message MsgStakeToValidatorSet {
   // owner is the user who is trying to stake.
   string owner = 1 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
 
-  // the amount of tokens the user is trying to stake. 
+  // the amount of tokens the user is trying to stake.
   repeated cosmos.base.v1beta1.Coin coins = 2 [
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
 
-  // the users validator set, {valAddr, weight} to stake the tokens to.
+  // the users validator-set, [{valAddr, weight}] to stake the tokens to.
+  // a user can have multiple {valAddr, weight}.
   repeated ValidatorPreference preferences = 3 [ (gogoproto.nullable) = false ];
 }
 
-message MsgStakeToValidatorSetResponse { uint64 ID = 1; }
+message MsgStakeToValidatorSetResponse {}
+
+message MsgUnStakeFromValidatorSet {
+  // owner is the user who is trying to unstake.
+  string owner = 1 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
+
+  // the id of the staked validator-set.
+  uint64 ID = 2;
+
+  // the amount the user wants to unstake
+  // user should be able to unstake a porportion of the amount from
+  // validator-set
+  repeated cosmos.base.v1beta1.Coin coins = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+
+  // the users validator-set, {valAddr, weight} to unstake the tokens from.
+  repeated ValidatorPreference preferences = 4 [ (gogoproto.nullable) = false ];
+}
+
+message MsgUnStakeFromValidatorSetResponse { bool success = 1; }

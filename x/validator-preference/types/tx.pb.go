@@ -124,7 +124,8 @@ type MsgStakeToValidatorSet struct {
 	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty" yaml:"owner"`
 	// the amount of tokens the user is trying to stake.
 	Coins github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,2,rep,name=coins,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"coins"`
-	// the users validator set, {valAddr, weight} to stake the tokens to.
+	// the users validator-set, [{valAddr, weight}] to stake the tokens to.
+	// a user can have multiple {valAddr, weight}.
 	Preferences []ValidatorPreference `protobuf:"bytes,3,rep,name=preferences,proto3" json:"preferences"`
 }
 
@@ -183,7 +184,6 @@ func (m *MsgStakeToValidatorSet) GetPreferences() []ValidatorPreference {
 }
 
 type MsgStakeToValidatorSetResponse struct {
-	ID uint64 `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
 }
 
 func (m *MsgStakeToValidatorSetResponse) Reset()         { *m = MsgStakeToValidatorSetResponse{} }
@@ -219,11 +219,122 @@ func (m *MsgStakeToValidatorSetResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgStakeToValidatorSetResponse proto.InternalMessageInfo
 
-func (m *MsgStakeToValidatorSetResponse) GetID() uint64 {
+type MsgUnStakeFromValidatorSet struct {
+	// owner is the user who is trying to unstake.
+	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty" yaml:"owner"`
+	// the id of the staked validator-set.
+	ID uint64 `protobuf:"varint,2,opt,name=ID,proto3" json:"ID,omitempty"`
+	// the amount the user wants to unstake
+	// user should be able to unstake a porportion of the amount from
+	// validator-set
+	Coins github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,3,rep,name=coins,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"coins"`
+	// the users validator-set, {valAddr, weight} to unstake the tokens from.
+	Preferences []ValidatorPreference `protobuf:"bytes,4,rep,name=preferences,proto3" json:"preferences"`
+}
+
+func (m *MsgUnStakeFromValidatorSet) Reset()         { *m = MsgUnStakeFromValidatorSet{} }
+func (m *MsgUnStakeFromValidatorSet) String() string { return proto.CompactTextString(m) }
+func (*MsgUnStakeFromValidatorSet) ProtoMessage()    {}
+func (*MsgUnStakeFromValidatorSet) Descriptor() ([]byte, []int) {
+	return fileDescriptor_fa9fa79f914b826d, []int{4}
+}
+func (m *MsgUnStakeFromValidatorSet) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUnStakeFromValidatorSet) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUnStakeFromValidatorSet.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUnStakeFromValidatorSet) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUnStakeFromValidatorSet.Merge(m, src)
+}
+func (m *MsgUnStakeFromValidatorSet) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUnStakeFromValidatorSet) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUnStakeFromValidatorSet.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUnStakeFromValidatorSet proto.InternalMessageInfo
+
+func (m *MsgUnStakeFromValidatorSet) GetOwner() string {
+	if m != nil {
+		return m.Owner
+	}
+	return ""
+}
+
+func (m *MsgUnStakeFromValidatorSet) GetID() uint64 {
 	if m != nil {
 		return m.ID
 	}
 	return 0
+}
+
+func (m *MsgUnStakeFromValidatorSet) GetCoins() github_com_cosmos_cosmos_sdk_types.Coins {
+	if m != nil {
+		return m.Coins
+	}
+	return nil
+}
+
+func (m *MsgUnStakeFromValidatorSet) GetPreferences() []ValidatorPreference {
+	if m != nil {
+		return m.Preferences
+	}
+	return nil
+}
+
+type MsgUnStakeFromValidatorSetResponse struct {
+	Success bool `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+}
+
+func (m *MsgUnStakeFromValidatorSetResponse) Reset()         { *m = MsgUnStakeFromValidatorSetResponse{} }
+func (m *MsgUnStakeFromValidatorSetResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgUnStakeFromValidatorSetResponse) ProtoMessage()    {}
+func (*MsgUnStakeFromValidatorSetResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_fa9fa79f914b826d, []int{5}
+}
+func (m *MsgUnStakeFromValidatorSetResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUnStakeFromValidatorSetResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUnStakeFromValidatorSetResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUnStakeFromValidatorSetResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUnStakeFromValidatorSetResponse.Merge(m, src)
+}
+func (m *MsgUnStakeFromValidatorSetResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUnStakeFromValidatorSetResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUnStakeFromValidatorSetResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUnStakeFromValidatorSetResponse proto.InternalMessageInfo
+
+func (m *MsgUnStakeFromValidatorSetResponse) GetSuccess() bool {
+	if m != nil {
+		return m.Success
+	}
+	return false
 }
 
 func init() {
@@ -231,6 +342,8 @@ func init() {
 	proto.RegisterType((*MsgValidatorSetPreferenceResponse)(nil), "osmosis.validatorpreference.v1beta1.MsgValidatorSetPreferenceResponse")
 	proto.RegisterType((*MsgStakeToValidatorSet)(nil), "osmosis.validatorpreference.v1beta1.MsgStakeToValidatorSet")
 	proto.RegisterType((*MsgStakeToValidatorSetResponse)(nil), "osmosis.validatorpreference.v1beta1.MsgStakeToValidatorSetResponse")
+	proto.RegisterType((*MsgUnStakeFromValidatorSet)(nil), "osmosis.validatorpreference.v1beta1.MsgUnStakeFromValidatorSet")
+	proto.RegisterType((*MsgUnStakeFromValidatorSetResponse)(nil), "osmosis.validatorpreference.v1beta1.MsgUnStakeFromValidatorSetResponse")
 }
 
 func init() {
@@ -238,36 +351,40 @@ func init() {
 }
 
 var fileDescriptor_fa9fa79f914b826d = []byte{
-	// 456 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xd2, 0xcd, 0x2f, 0xce, 0xcd,
-	0x2f, 0xce, 0x2c, 0xd6, 0x2f, 0x4b, 0xcc, 0xc9, 0x4c, 0x49, 0x2c, 0xc9, 0x2f, 0xd2, 0x2d, 0x28,
-	0x4a, 0x4d, 0x4b, 0x2d, 0x4a, 0xcd, 0x4b, 0x4e, 0xd5, 0x2f, 0x33, 0x4c, 0x4a, 0x2d, 0x49, 0x34,
-	0xd4, 0x2f, 0xa9, 0xd0, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x52, 0x86, 0x2a, 0xd7, 0x83, 0x2b,
-	0x47, 0xa8, 0xd6, 0x83, 0xaa, 0x96, 0x12, 0x49, 0xcf, 0x4f, 0xcf, 0x07, 0xab, 0xd7, 0x07, 0xb1,
-	0x20, 0x5a, 0xa5, 0xe4, 0x92, 0xc1, 0x7a, 0xf5, 0x93, 0x12, 0x8b, 0x11, 0x06, 0x27, 0xe7, 0x67,
-	0xe6, 0x41, 0xe5, 0x0d, 0x88, 0x72, 0x49, 0x71, 0x49, 0x62, 0x49, 0x2a, 0x44, 0x87, 0x52, 0x2d,
-	0x97, 0xa4, 0x6f, 0x71, 0x7a, 0x18, 0x4c, 0x79, 0x70, 0x6a, 0x49, 0x00, 0x5c, 0x83, 0x50, 0x02,
-	0x17, 0x37, 0x42, 0x7b, 0xb1, 0x04, 0xa3, 0x02, 0xb3, 0x06, 0xb7, 0x91, 0x85, 0x1e, 0x11, 0xee,
-	0xd7, 0x83, 0x9b, 0x88, 0x30, 0xce, 0x89, 0xe5, 0xc4, 0x3d, 0x79, 0x86, 0x20, 0x64, 0x23, 0x95,
-	0x6c, 0xb9, 0x14, 0x71, 0x5a, 0x1f, 0x94, 0x5a, 0x5c, 0x90, 0x9f, 0x57, 0x9c, 0x2a, 0x24, 0xc1,
-	0xc5, 0x5e, 0x5c, 0x9a, 0x9c, 0x9c, 0x5a, 0x0c, 0x72, 0x02, 0xa3, 0x06, 0x47, 0x10, 0x8c, 0xab,
-	0xd4, 0xca, 0xc4, 0x25, 0xe6, 0x5b, 0x9c, 0x1e, 0x5c, 0x92, 0x98, 0x9d, 0x1a, 0x92, 0x8f, 0x6c,
-	0x8c, 0x90, 0x1a, 0x17, 0x6b, 0x7e, 0x79, 0x5e, 0x6a, 0x11, 0x58, 0x0b, 0xa7, 0x93, 0xc0, 0xa7,
-	0x7b, 0xf2, 0x3c, 0x95, 0x89, 0xb9, 0x39, 0x56, 0x4a, 0x60, 0x61, 0xa5, 0x20, 0x88, 0xb4, 0x50,
-	0x22, 0x17, 0x2b, 0x28, 0x00, 0x8b, 0x25, 0x98, 0xc0, 0xbe, 0x93, 0xd4, 0x83, 0x04, 0xb1, 0x1e,
-	0x28, 0x88, 0xe1, 0xbe, 0x71, 0xce, 0xcf, 0xcc, 0x73, 0x32, 0x00, 0x39, 0x7f, 0xd5, 0x7d, 0x79,
-	0x8d, 0xf4, 0xcc, 0x92, 0x8c, 0xd2, 0x24, 0xbd, 0xe4, 0xfc, 0x5c, 0x7d, 0x68, 0x7c, 0x40, 0x28,
-	0xdd, 0xe2, 0x94, 0x6c, 0xfd, 0x92, 0xca, 0x82, 0xd4, 0x62, 0xb0, 0x86, 0xe2, 0x20, 0x88, 0xc9,
-	0xe8, 0xc1, 0xc8, 0x4c, 0xfd, 0x60, 0x34, 0xe0, 0x92, 0xc3, 0x1e, 0x0c, 0xf0, 0x30, 0xe4, 0xe3,
-	0x62, 0xf2, 0x74, 0x01, 0x87, 0x05, 0x4b, 0x10, 0x93, 0xa7, 0x8b, 0xd1, 0x09, 0x26, 0x2e, 0x66,
-	0xdf, 0xe2, 0x74, 0xa1, 0x65, 0x8c, 0x5c, 0x32, 0xce, 0x45, 0xa9, 0x89, 0x25, 0xa9, 0x38, 0xd2,
-	0x80, 0x1d, 0x51, 0xee, 0xc4, 0x19, 0x89, 0x52, 0x6e, 0x94, 0xe9, 0x87, 0x7b, 0x60, 0x3a, 0x23,
-	0x97, 0x30, 0xb6, 0x78, 0xb6, 0x26, 0xd6, 0x7c, 0x2c, 0x9a, 0xa5, 0x9c, 0x29, 0xd0, 0x0c, 0x73,
-	0x99, 0x53, 0xd4, 0x89, 0x47, 0x72, 0x8c, 0x17, 0x1e, 0xc9, 0x31, 0x3e, 0x78, 0x24, 0xc7, 0x38,
-	0xe1, 0xb1, 0x1c, 0xc3, 0x85, 0xc7, 0x72, 0x0c, 0x37, 0x1e, 0xcb, 0x31, 0x44, 0x39, 0x20, 0xa5,
-	0x14, 0xa8, 0x45, 0xba, 0x39, 0x89, 0x49, 0xc5, 0xfa, 0xf0, 0x6c, 0x6a, 0x68, 0xa4, 0x5f, 0x81,
-	0x3d, 0xb3, 0x82, 0xd3, 0x51, 0x12, 0x1b, 0x38, 0x97, 0x1a, 0x03, 0x02, 0x00, 0x00, 0xff, 0xff,
-	0xe7, 0xdd, 0xa7, 0x41, 0x63, 0x04, 0x00, 0x00,
+	// 516 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x54, 0xbf, 0x6f, 0xd3, 0x40,
+	0x18, 0xcd, 0xd9, 0x29, 0x3f, 0xae, 0x08, 0x21, 0x83, 0x90, 0x6b, 0x21, 0x27, 0x18, 0x09, 0x65,
+	0x89, 0xaf, 0x09, 0x0b, 0x02, 0x51, 0x50, 0x52, 0x15, 0x75, 0x88, 0x84, 0x5c, 0x60, 0xe8, 0xc4,
+	0xd9, 0x3d, 0x8c, 0xd5, 0xc4, 0x17, 0xf9, 0xbb, 0x96, 0x76, 0x60, 0x64, 0x67, 0x43, 0xec, 0x88,
+	0x81, 0xbf, 0xa4, 0x63, 0x47, 0xa6, 0x82, 0x92, 0x3f, 0x00, 0x89, 0xbf, 0x00, 0xf9, 0xec, 0xd8,
+	0x01, 0xd9, 0xc2, 0x22, 0x51, 0x27, 0xff, 0xb8, 0xf7, 0xde, 0xbd, 0x7b, 0xf7, 0x7d, 0x1f, 0x6e,
+	0x73, 0x18, 0x71, 0x08, 0x80, 0x1c, 0xd2, 0x61, 0xb0, 0x47, 0x05, 0x8f, 0xda, 0xe3, 0x88, 0xbd,
+	0x66, 0x11, 0x0b, 0x3d, 0x46, 0x0e, 0x3b, 0x2e, 0x13, 0xb4, 0x43, 0xc4, 0x91, 0x3d, 0x8e, 0xb8,
+	0xe0, 0xda, 0x9d, 0x14, 0x6e, 0x67, 0xf0, 0x1c, 0x6d, 0xa7, 0x68, 0xe3, 0x86, 0xcf, 0x7d, 0x2e,
+	0xf1, 0x24, 0x7e, 0x4b, 0xa8, 0x86, 0xe9, 0x49, 0x2e, 0x71, 0x29, 0xe4, 0xc2, 0x1e, 0x0f, 0xc2,
+	0x74, 0x7d, 0xbd, 0x92, 0x13, 0x10, 0x54, 0xb0, 0x84, 0x61, 0xbd, 0xc3, 0x6b, 0x03, 0xf0, 0x5f,
+	0xce, 0xe0, 0x3b, 0x4c, 0x3c, 0xcb, 0x08, 0xda, 0x2b, 0xbc, 0x9a, 0xd3, 0x41, 0x47, 0x4d, 0xb5,
+	0xb5, 0xda, 0xbd, 0x6f, 0x57, 0xf0, 0x6f, 0x67, 0x8a, 0xb9, 0x5c, 0xaf, 0x7e, 0x72, 0xd6, 0xa8,
+	0x39, 0xf3, 0x92, 0xd6, 0x23, 0x7c, 0xbb, 0x74, 0x7b, 0x87, 0xc1, 0x98, 0x87, 0xc0, 0x34, 0x1d,
+	0x5f, 0x84, 0x03, 0xcf, 0x63, 0x10, 0x5b, 0x40, 0xad, 0x4b, 0xce, 0xec, 0xd3, 0x7a, 0xaf, 0xe0,
+	0x9b, 0x03, 0xf0, 0x77, 0x04, 0xdd, 0x67, 0xcf, 0xf9, 0xbc, 0x8c, 0x76, 0x17, 0xaf, 0xf0, 0xb7,
+	0x21, 0x8b, 0x24, 0xe5, 0x72, 0xef, 0xda, 0xaf, 0xb3, 0xc6, 0x95, 0x63, 0x3a, 0x1a, 0x3e, 0xb0,
+	0xe4, 0x6f, 0xcb, 0x49, 0x96, 0x35, 0x8a, 0x57, 0xe2, 0x00, 0x41, 0x57, 0xe4, 0xe9, 0xd6, 0xec,
+	0x24, 0x62, 0x3b, 0x8e, 0x38, 0x3b, 0x4d, 0x9f, 0x07, 0x61, 0x6f, 0x3d, 0xb6, 0xff, 0xf5, 0x7b,
+	0xa3, 0xe5, 0x07, 0xe2, 0xcd, 0x81, 0x6b, 0x7b, 0x7c, 0x44, 0xd2, 0xfb, 0x48, 0x1e, 0x6d, 0xd8,
+	0xdb, 0x27, 0xe2, 0x78, 0xcc, 0x40, 0x12, 0xc0, 0x49, 0x94, 0xff, 0x8e, 0x51, 0x5d, 0x7e, 0x8c,
+	0x4d, 0x6c, 0x16, 0xc7, 0x30, 0xcb, 0xd0, 0xfa, 0xa4, 0x60, 0x63, 0x00, 0xfe, 0x8b, 0x50, 0x82,
+	0xb6, 0x22, 0x3e, 0xfa, 0xaf, 0xb4, 0xae, 0x62, 0x65, 0x7b, 0x53, 0x57, 0x9a, 0xa8, 0x55, 0x77,
+	0x94, 0xed, 0xcd, 0x3c, 0x3d, 0xf5, 0xbc, 0xd2, 0xab, 0x2f, 0x3f, 0xbd, 0x0d, 0x6c, 0x95, 0x47,
+	0xf3, 0xef, 0x2a, 0xec, 0xfe, 0x54, 0xb1, 0x3a, 0x00, 0x5f, 0xfb, 0x82, 0xf0, 0xad, 0x7e, 0xc4,
+	0xa8, 0x60, 0x25, 0xfd, 0xb4, 0x51, 0xc9, 0x75, 0x69, 0x43, 0x18, 0x5b, 0x8b, 0xf1, 0xb3, 0xa3,
+	0x7c, 0x44, 0xf8, 0x7a, 0x51, 0xcf, 0x3c, 0xac, 0xaa, 0x5f, 0x40, 0x36, 0xfa, 0x0b, 0x90, 0x33,
+	0x67, 0x9f, 0x11, 0xd6, 0xe7, 0x2e, 0xe2, 0x4f, 0x7b, 0x8f, 0xab, 0xee, 0x50, 0x72, 0x95, 0xc6,
+	0xd3, 0x05, 0x05, 0x66, 0x36, 0x7b, 0xbb, 0x27, 0x13, 0x13, 0x9d, 0x4e, 0x4c, 0xf4, 0x63, 0x62,
+	0xa2, 0x0f, 0x53, 0xb3, 0x76, 0x3a, 0x35, 0x6b, 0xdf, 0xa6, 0x66, 0x6d, 0xf7, 0xc9, 0x5c, 0x79,
+	0xa7, 0x9b, 0xb5, 0x87, 0xd4, 0x05, 0x92, 0x4d, 0xe6, 0x4e, 0x97, 0x1c, 0x15, 0xcf, 0x67, 0x59,
+	0xfc, 0xee, 0x05, 0x39, 0x98, 0xef, 0xfd, 0x0e, 0x00, 0x00, 0xff, 0xff, 0xbc, 0x50, 0x3d, 0xcc,
+	0x56, 0x06, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -286,6 +403,9 @@ type MsgClient interface {
 	CreateValidatorSetPreference(ctx context.Context, in *MsgValidatorSetPreference, opts ...grpc.CallOption) (*MsgValidatorSetPreferenceResponse, error)
 	// StakeToValidatorSet gets the owner and coins and stakes to a validator-set.
 	StakeToValidatorSet(ctx context.Context, in *MsgStakeToValidatorSet, opts ...grpc.CallOption) (*MsgStakeToValidatorSetResponse, error)
+	// UnStakeFromoValidatorSet gets the owner and coins and unstakes from
+	// validator-set.
+	UnStakeFromoValidatorSet(ctx context.Context, in *MsgUnStakeFromValidatorSet, opts ...grpc.CallOption) (*MsgUnStakeFromValidatorSetResponse, error)
 }
 
 type msgClient struct {
@@ -314,12 +434,24 @@ func (c *msgClient) StakeToValidatorSet(ctx context.Context, in *MsgStakeToValid
 	return out, nil
 }
 
+func (c *msgClient) UnStakeFromoValidatorSet(ctx context.Context, in *MsgUnStakeFromValidatorSet, opts ...grpc.CallOption) (*MsgUnStakeFromValidatorSetResponse, error) {
+	out := new(MsgUnStakeFromValidatorSetResponse)
+	err := c.cc.Invoke(ctx, "/osmosis.validatorpreference.v1beta1.Msg/UnStakeFromoValidatorSet", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
 	// CreateValidatorSetPreference creates a set of validator preference.
 	CreateValidatorSetPreference(context.Context, *MsgValidatorSetPreference) (*MsgValidatorSetPreferenceResponse, error)
 	// StakeToValidatorSet gets the owner and coins and stakes to a validator-set.
 	StakeToValidatorSet(context.Context, *MsgStakeToValidatorSet) (*MsgStakeToValidatorSetResponse, error)
+	// UnStakeFromoValidatorSet gets the owner and coins and unstakes from
+	// validator-set.
+	UnStakeFromoValidatorSet(context.Context, *MsgUnStakeFromValidatorSet) (*MsgUnStakeFromValidatorSetResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
@@ -331,6 +463,9 @@ func (*UnimplementedMsgServer) CreateValidatorSetPreference(ctx context.Context,
 }
 func (*UnimplementedMsgServer) StakeToValidatorSet(ctx context.Context, req *MsgStakeToValidatorSet) (*MsgStakeToValidatorSetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StakeToValidatorSet not implemented")
+}
+func (*UnimplementedMsgServer) UnStakeFromoValidatorSet(ctx context.Context, req *MsgUnStakeFromValidatorSet) (*MsgUnStakeFromValidatorSetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UnStakeFromoValidatorSet not implemented")
 }
 
 func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
@@ -373,6 +508,24 @@ func _Msg_StakeToValidatorSet_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_UnStakeFromoValidatorSet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUnStakeFromValidatorSet)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UnStakeFromoValidatorSet(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/osmosis.validatorpreference.v1beta1.Msg/UnStakeFromoValidatorSet",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UnStakeFromoValidatorSet(ctx, req.(*MsgUnStakeFromValidatorSet))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Msg_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "osmosis.validatorpreference.v1beta1.Msg",
 	HandlerType: (*MsgServer)(nil),
@@ -384,6 +537,10 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "StakeToValidatorSet",
 			Handler:    _Msg_StakeToValidatorSet_Handler,
+		},
+		{
+			MethodName: "UnStakeFromoValidatorSet",
+			Handler:    _Msg_UnStakeFromoValidatorSet_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -538,8 +695,99 @@ func (m *MsgStakeToValidatorSetResponse) MarshalToSizedBuffer(dAtA []byte) (int,
 	_ = i
 	var l int
 	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgUnStakeFromValidatorSet) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUnStakeFromValidatorSet) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUnStakeFromValidatorSet) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Preferences) > 0 {
+		for iNdEx := len(m.Preferences) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Preferences[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintTx(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x22
+		}
+	}
+	if len(m.Coins) > 0 {
+		for iNdEx := len(m.Coins) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Coins[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintTx(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x1a
+		}
+	}
 	if m.ID != 0 {
 		i = encodeVarintTx(dAtA, i, uint64(m.ID))
+		i--
+		dAtA[i] = 0x10
+	}
+	if len(m.Owner) > 0 {
+		i -= len(m.Owner)
+		copy(dAtA[i:], m.Owner)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Owner)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgUnStakeFromValidatorSetResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUnStakeFromValidatorSetResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUnStakeFromValidatorSetResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Success {
+		i--
+		if m.Success {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
 		i--
 		dAtA[i] = 0x8
 	}
@@ -615,8 +863,45 @@ func (m *MsgStakeToValidatorSetResponse) Size() (n int) {
 	}
 	var l int
 	_ = l
+	return n
+}
+
+func (m *MsgUnStakeFromValidatorSet) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Owner)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
 	if m.ID != 0 {
 		n += 1 + sovTx(uint64(m.ID))
+	}
+	if len(m.Coins) > 0 {
+		for _, e := range m.Coins {
+			l = e.Size()
+			n += 1 + l + sovTx(uint64(l))
+		}
+	}
+	if len(m.Preferences) > 0 {
+		for _, e := range m.Preferences {
+			l = e.Size()
+			n += 1 + l + sovTx(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *MsgUnStakeFromValidatorSetResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Success {
+		n += 2
 	}
 	return n
 }
@@ -960,7 +1245,89 @@ func (m *MsgStakeToValidatorSetResponse) Unmarshal(dAtA []byte) error {
 			return fmt.Errorf("proto: MsgStakeToValidatorSetResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgUnStakeFromValidatorSet) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgUnStakeFromValidatorSet: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgUnStakeFromValidatorSet: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
 		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Owner = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ID", wireType)
 			}
@@ -979,6 +1346,144 @@ func (m *MsgStakeToValidatorSetResponse) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Coins", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Coins = append(m.Coins, types.Coin{})
+			if err := m.Coins[len(m.Coins)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Preferences", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Preferences = append(m.Preferences, ValidatorPreference{})
+			if err := m.Preferences[len(m.Preferences)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgUnStakeFromValidatorSetResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgUnStakeFromValidatorSetResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgUnStakeFromValidatorSetResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Success", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.Success = bool(v != 0)
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
