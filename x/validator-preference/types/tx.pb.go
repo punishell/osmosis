@@ -124,7 +124,8 @@ type MsgStakeToValidatorSet struct {
 	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty" yaml:"owner"`
 	// the amount of tokens the user is trying to stake.
 	Coins github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,2,rep,name=coins,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"coins"`
-	// the users validator set, {valAddr, weight} to stake the tokens to.
+	// the users validator-set, [{valAddr, weight}] to stake the tokens to.
+	// a user can have multiple {valAddr, weight}.
 	Preferences []ValidatorPreference `protobuf:"bytes,3,rep,name=preferences,proto3" json:"preferences"`
 }
 
@@ -229,13 +230,13 @@ func (m *MsgStakeToValidatorSetResponse) GetID() uint64 {
 type MsgUnStakeFromValidatorSet struct {
 	// owner is the user who is trying to unstake.
 	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty" yaml:"owner"`
-	// the id of the staked
+	// the id of the staked validator-set.
 	ID uint64 `protobuf:"varint,2,opt,name=ID,proto3" json:"ID,omitempty"`
 	// the amount the user wants to unstake
 	// user should be able to unstake a porportion of the amount from
 	// validator-set
 	Coins github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,3,rep,name=coins,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"coins"`
-	// the users validator set, {valAddr, weight} to unstake the tokens from.
+	// the users validator-set, {valAddr, weight} to unstake the tokens from.
 	Preferences []ValidatorPreference `protobuf:"bytes,4,rep,name=preferences,proto3" json:"preferences"`
 }
 
@@ -410,7 +411,7 @@ type MsgClient interface {
 	CreateValidatorSetPreference(ctx context.Context, in *MsgValidatorSetPreference, opts ...grpc.CallOption) (*MsgValidatorSetPreferenceResponse, error)
 	// StakeToValidatorSet gets the owner and coins and stakes to a validator-set.
 	StakeToValidatorSet(ctx context.Context, in *MsgStakeToValidatorSet, opts ...grpc.CallOption) (*MsgStakeToValidatorSetResponse, error)
-	// UnStakeFromoValidatorSet gets the owner and coins and stakes to a
+	// UnStakeFromoValidatorSet gets the owner and coins and unstakes from
 	// validator-set.
 	UnStakeFromoValidatorSet(ctx context.Context, in *MsgUnStakeFromValidatorSet, opts ...grpc.CallOption) (*MsgUnStakeFromValidatorSetResponse, error)
 }
@@ -456,7 +457,7 @@ type MsgServer interface {
 	CreateValidatorSetPreference(context.Context, *MsgValidatorSetPreference) (*MsgValidatorSetPreferenceResponse, error)
 	// StakeToValidatorSet gets the owner and coins and stakes to a validator-set.
 	StakeToValidatorSet(context.Context, *MsgStakeToValidatorSet) (*MsgStakeToValidatorSetResponse, error)
-	// UnStakeFromoValidatorSet gets the owner and coins and stakes to a
+	// UnStakeFromoValidatorSet gets the owner and coins and unstakes from
 	// validator-set.
 	UnStakeFromoValidatorSet(context.Context, *MsgUnStakeFromValidatorSet) (*MsgUnStakeFromValidatorSetResponse, error)
 }

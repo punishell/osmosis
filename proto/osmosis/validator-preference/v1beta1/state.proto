@@ -7,9 +7,9 @@ import "google/api/annotations.proto";
 option go_package = "github.com/osmosis-labs/osmosis/v12/x/validator-preference/types";
 option (gogoproto.goproto_getters_all) = false;
 
-// ValidatorPreference defines the message structure for CreateValidatorSetPreference. 
-// it allows a user to set {val_addr, weight} in state. 
-// If a user does not have a validator-set preference list set, and has
+// ValidatorPreference defines the message structure for
+// CreateValidatorSetPreference. it allows a user to set {val_addr, weight} in
+// state. If a user does not have a validator-set preference list set, and has
 // staked, make their preference list default to their current staking
 // distribution.
 message ValidatorPreference {

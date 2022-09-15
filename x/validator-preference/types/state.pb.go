@@ -27,7 +27,7 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // ValidatorPreference defines the message structure for
 // CreateValidatorSetPreference. it allows a user to set {val_addr, weight} in
-// state. If a user does not have a validator set preference list set, and has
+// state. If a user does not have a validator-set preference list set, and has
 // staked, make their preference list default to their current staking
 // distribution.
 type ValidatorPreference struct {

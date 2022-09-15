@@ -17,7 +17,7 @@ service Msg {
   rpc StakeToValidatorSet(MsgStakeToValidatorSet)
       returns (MsgStakeToValidatorSetResponse);
 
-  // UnStakeFromoValidatorSet gets the owner and coins and unstakes from 
+  // UnStakeFromoValidatorSet gets the owner and coins and unstakes from
   // validator-set.
   rpc UnStakeFromoValidatorSet(MsgUnStakeFromValidatorSet)
       returns (MsgUnStakeFromValidatorSetResponse);
