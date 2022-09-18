@@ -6,7 +6,6 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/osmosis-labs/osmosis/v12/x/validator-preference/types"
@@ -36,26 +35,28 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
 
-func (k Keeper) SetValidatorSetPreferences(ctx sdk.Context, validators types.MsgValidatorSetPreference) {
+func (k Keeper) SetValidatorSetPreferences(ctx sdk.Context, validators types.MsgValidatorSetPreference) error {
 	store := ctx.KVStore(k.storeKey)
-	prefixStore := prefix.NewStore(store, types.KeyPrefixValidatorSet)
-	bz, err := proto.Marshal(&validators)
+	bz, err := proto.Marshal(&validators.Preferences)
 	if err != nil {
-		panic("Error during marshalling")
+		return err
 	}
-	prefixStore.Set(types.KeyPrefixValidatorSet, bz)
+	store.Set([]byte(validators.Owner), bz)
+	return nil
 }
 
-func (k Keeper) GetValidatorSetPreference(ctx sdk.Context) []types.ValidatorPreference {
+func (k Keeper) GetValidatorSetPreference(ctx sdk.Context, owner string) ([]types.ValidatorPreference, bool) {
 	validatorSet := []types.ValidatorPreference{}
 
 	store := ctx.KVStore(k.storeKey)
-	prefixStore := prefix.NewStore(store, types.KeyPrefixValidatorSet)
-	bz := prefixStore.Get(types.KeyPrefixValidatorSet)
+	bz := store.Get([]byte(owner))
+	if bz == nil {
+		return validatorSet, false
+	}
 	err := proto.Unmarshal(bz, &validatorSet)
 	if err != nil {
-		panic("Error during unmarshalling")
+		return nil, false
 	}
 
-	return validatorSet
+	return validatorSet, true
 }

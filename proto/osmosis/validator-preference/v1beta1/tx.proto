@@ -25,7 +25,10 @@ service Msg {
 
 // MsgValidatorSetPreference is a set of list that holds validator-preference.
 message MsgValidatorSetPreference {
-  repeated ValidatorPreference preferences = 1 [ (gogoproto.nullable) = false ];
+  // user who is trying to create a validator set.
+  string owner = 1 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
+
+  repeated ValidatorPreference preferences = 2 [ (gogoproto.nullable) = false ];
 }
 
 message MsgValidatorSetPreferenceResponse { bool success = 1; }
@@ -50,9 +53,6 @@ message MsgStakeToValidatorSetResponse {}
 message MsgUnStakeFromValidatorSet {
   // owner is the user who is trying to unstake.
   string owner = 1 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
-
-  // the id of the staked validator-set.
-  uint64 ID = 2;
 
   // the amount the user wants to unstake
   // user should be able to unstake a porportion of the amount from
