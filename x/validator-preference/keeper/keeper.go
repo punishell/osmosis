@@ -35,7 +35,7 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
 
-func (k Keeper) SetValidatorSetPreferences(ctx sdk.Context, validators types.MsgValidatorSetPreference) error {
+func (k Keeper) SetValidatorSetPreferences(ctx sdk.Context, validators types.MsgStakeToValidatorSet) error {
 	store := ctx.KVStore(k.storeKey)
 	bz, err := proto.Marshal(&validators.Preferences)
 	if err != nil {

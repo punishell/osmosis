@@ -17,9 +17,9 @@ service Msg {
   rpc StakeToValidatorSet(MsgStakeToValidatorSet)
       returns (MsgStakeToValidatorSetResponse);
 
-  // UnStakeFromoValidatorSet gets the owner and coins and unstakes from
+  // UnStakeFromValidatorSet gets the owner and coins and unstakes from
   // validator-set.
-  rpc UnStakeFromoValidatorSet(MsgUnStakeFromValidatorSet)
+  rpc UnStakeFromValidatorSet(MsgUnStakeFromValidatorSet)
       returns (MsgUnStakeFromValidatorSetResponse);
 }
 
@@ -28,7 +28,10 @@ message MsgValidatorSetPreference {
   // user who is trying to create a validator set.
   string owner = 1 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
 
-  repeated ValidatorPreference preferences = 2 [ (gogoproto.nullable) = false ];
+  repeated ValidatorPreference preferences = 2 [
+    (gogoproto.moretags) = "yaml:\"preferences\"",
+    (gogoproto.nullable) = false
+  ];
 }
 
 message MsgValidatorSetPreferenceResponse { bool success = 1; }
@@ -45,7 +48,10 @@ message MsgStakeToValidatorSet {
 
   // the users validator-set, [{valAddr, weight}] to stake the tokens to.
   // a user can have multiple {valAddr, weight}.
-  repeated ValidatorPreference preferences = 3 [ (gogoproto.nullable) = false ];
+  repeated ValidatorPreference preferences = 3 [
+    (gogoproto.moretags) = "yaml:\"preferences\"",
+    (gogoproto.nullable) = false
+  ];
 }
 
 message MsgStakeToValidatorSetResponse {}
@@ -57,13 +63,16 @@ message MsgUnStakeFromValidatorSet {
   // the amount the user wants to unstake
   // user should be able to unstake a porportion of the amount from
   // validator-set
-  repeated cosmos.base.v1beta1.Coin coins = 3 [
+  repeated cosmos.base.v1beta1.Coin coins = 2 [
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
 
   // the users validator-set, {valAddr, weight} to unstake the tokens from.
-  repeated ValidatorPreference preferences = 4 [ (gogoproto.nullable) = false ];
+  repeated ValidatorPreference preferences = 3 [
+    (gogoproto.moretags) = "yaml:\"preferences\"",
+    (gogoproto.nullable) = false
+  ];
 }
 
 message MsgUnStakeFromValidatorSetResponse { bool success = 1; }

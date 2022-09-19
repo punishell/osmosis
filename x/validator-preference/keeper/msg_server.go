@@ -26,19 +26,18 @@ var _ types.MsgServer = msgServer{}
 func (server msgServer) CreateValidatorSetPreference(goCtx context.Context, msg *types.MsgValidatorSetPreference) (*types.MsgValidatorSetPreferenceResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// TODO: might want to check if a user already have a validator-set created
+	// check if a user already have a validator-set created
+	_, found := server.keeper.GetValidatorSetPreference(ctx, msg.Owner)
+	if found {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, fmt.Sprintf("user %d already has a validator set", msg.Owner))
+	}
 
 	total_weight := sdk.NewDec(0)
 	for _, val := range msg.Preferences {
 		// validation checks making sure the weights add up to 1 and also the validator given is correct
-		vals, err := sdk.ValAddressFromBech32(val.ValOperAddress)
+		_, err := server.keeper.ValidateValidator(ctx, val.ValOperAddress)
 		if err != nil {
-			return nil, fmt.Errorf("validator not formatted")
-		}
-
-		_, found := server.keeper.stakingKeeper.GetValidator(ctx, vals)
-		if !found {
-			return nil, fmt.Errorf("validator address kdoesnot exist")
+			return nil, err
 		}
 
 		total_weight = total_weight.Add(val.Weight)
@@ -66,40 +65,32 @@ func (server msgServer) StakeToValidatorSet(goCtx context.Context, msg *types.Ms
 	tokenAmt := sdk.NewDec(msg.Coins[0].Amount.Int64())
 
 	for _, val := range msg.Preferences {
-		// it'd be nice if this value was decimal
-		amountToStake := val.Weight.Mul(tokenAmt).RoundInt()
-
-		vals, err := sdk.ValAddressFromBech32(val.ValOperAddress)
+		validator, err := server.keeper.ValidateValidator(ctx, val.ValOperAddress)
 		if err != nil {
-			return nil, fmt.Errorf("validator not formatted")
+			return nil, err
 		}
 
-		validator, found := server.keeper.stakingKeeper.GetValidator(ctx, vals)
-		if !found {
-			return nil, fmt.Errorf("validator address doesnot exist")
-		}
+		// NOTE: it'd be nice if this value was decimal
+		amountToStake := val.Weight.Mul(tokenAmt).RoundInt()
 
 		_, err = server.keeper.stakingKeeper.Delegate(ctx, owner, amountToStake, validator.Status, validator, true)
 		if err != nil {
 			return nil, err
 		}
-
 	}
 
 	return &types.MsgStakeToValidatorSetResponse{}, nil
 }
 
-func (server msgServer) UnStakeFromoValidatorSet(goCtx context.Context, msg *types.MsgUnStakeFromValidatorSet) (*types.MsgUnStakeFromValidatorSetResponse, error) {
+// userA stakes {10osmo ValA ValB} -> [{ValA, ValB} -> {0.4, 0.6}] = 10osmo = {4osmo, 6osmo}
+// userA unstake {3osmo ValA} -> [{valA, valB} -> {0.142, 0.857}] = 7osmo = {1osmo, 6osmo}
+// 	User can also do unstake all
+// 	User gives {amount, validators} to unstake from (partial undelegation)
+func (server msgServer) UnStakeFromValidatorSet(goCtx context.Context, msg *types.MsgUnStakeFromValidatorSet) (*types.MsgUnStakeFromValidatorSetResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// userA stakes {10osmo ValA ValB} -> [{ValA, ValB} -> {0.4, 0.6}] = 10Osmos = {4osmo, 6osmo}
-	// userA unstake {3osmo ValA} -> [{valA, valB} -> {0.142, 0.857}] = 7osmo = {1osmo, 6osmo}
-
-	// User can also do unstake all
-	// User gives {amount, validators} to unstake from
-
 	// get the existing validator set preference
-	_, found := server.keeper.GetValidatorSetPreference(ctx, msg.Owner)
+	existingSet, found := server.keeper.GetValidatorSetPreference(ctx, msg.Owner)
 	if !found {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, fmt.Sprintf("user %d doesn't have validator set", msg.Owner))
 	}
@@ -109,43 +100,44 @@ func (server msgServer) UnStakeFromoValidatorSet(goCtx context.Context, msg *typ
 		return nil, err
 	}
 
-	tokens := msg.Coins             // the total amount the user wants to unstake
-	validatorSet := msg.Preferences // new validator set
-	// Calculate new weights based on tokens provided
+	// the total amount the user wants to unstakes
+	tokenAmt := sdk.NewDec(msg.Coins[0].Amount.Int64())
 
 	total_weight := sdk.NewDec(0)
 	// check if the provided validator set is correct
-	for _, val := range validatorSet {
+	for i, val := range msg.Preferences {
 		// validation checks making sure the weights add up to 1 and also the validator given is correct
+		_, err := server.keeper.ValidateValidator(ctx, val.ValOperAddress)
+		if err != nil {
+			return nil, err
+		}
+
+		// Calculate the amount to unstake based on the weight provided
+		amountToUnStake := val.Weight.Mul(tokenAmt)
+
+		// ValidateValidator gurantees that this exist
 		valAddr, err := sdk.ValAddressFromBech32(val.ValOperAddress)
 		if err != nil {
-			return nil, fmt.Errorf("validator not formatted")
+			return nil, err
 		}
 
-		_, found := server.keeper.stakingKeeper.GetValidator(ctx, valAddr)
-		if !found {
-			return nil, fmt.Errorf("validator address kdoesnot exist")
-		}
-
-		amountToStake := val.Weight.Mul(tokenAmt).RoundInt()
-
-		_, err := server.keeper.stakingKeeper.Undelegate(ctx, owner, valAddr)
+		_, err = server.keeper.stakingKeeper.Undelegate(ctx, owner, valAddr, amountToUnStake)
 		if err != nil {
 			return nil, err
 		}
 
 		total_weight = total_weight.Add(val.Weight)
+
+		// updating the existing validator set with new weights
+		existingSet[i].Weight = val.Weight
+		existingSet[i].ValOperAddress = val.ValOperAddress
 	}
 
-	// loop through the amount and validator(should be in a list)
-	// -> check validator they exist in the current set preferece
-	// -> check the user has actually staked the amount to the validator
-	// -> undelegate the amount from that specific validator
-	// -> update the user val-set-preference set
+	if total_weight != sdk.NewDec(1) {
+		return nil, fmt.Errorf("The weights allocated to the validators do not add up to 1")
+	}
 
-	// check that the user has staked toekns in first place
+	server.keeper.SetValidatorSetPreferences(ctx, existingSet)
 
-	// Undelegate()
-
-	return nil, nil
+	return &types.MsgUnStakeFromValidatorSetResponse{}, nil
 }
