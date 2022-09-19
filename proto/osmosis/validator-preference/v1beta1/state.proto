@@ -22,3 +22,13 @@ message ValidatorPreference {
     (gogoproto.nullable) = false
   ];
 }
+
+message ValidatorSetPreferences {
+  // owner is the user who is trying to unstake.
+  string owner = 1 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
+
+  repeated ValidatorPreference preferences = 2 [
+    (gogoproto.moretags) = "yaml:\"preferences\"",
+    (gogoproto.nullable) = false
+  ];
+}
